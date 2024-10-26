@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default"
+  data-assets-path="../static/assets/" data-template="vertical-menu-template-free">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>Recap | Tenant Kawasan Industri</title>
+  <meta name="description" content="" />
+  <link rel="icon" type="image/x-icon" href="../static/logoTelkom.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../static/assets/vendor/fonts/boxicons.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/css/core.css" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="../static/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+  <link rel="stylesheet" href="../static/assets/css/demo.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/libs/apex-charts/apex-charts.css" />
+  <script src="../static/assets/vendor/js/helpers.js"></script>
+  <script src="../static/assets/js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <style>
+    #dropdownSearchList {
+      position: absolute;
+      width: 100%;
+      z-index: 1000;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            {% if category == 'success' %}
+              toastr.success("{{ message }}");
+            {% elif category == 'warning' %}
+              toastr.warning("{{ message }}");
+            {% elif category == 'danger' %}
+              toastr.error("{{ message }}");
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    });
+
+    function showDropdown(jenis) {
+      // Show the dropdown when the text field is clicked
+      document.getElementById("dropdownSearchList"+jenis).style.display = "block";
+    }
+
+    function filterDropdown(jenis) {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById("searchDropdown"+jenis);
+      filter = input.value.toUpperCase();
+      ul = document.getElementById("dropdownSearchList"+jenis);
+      li = ul.getElementsByTagName("li");
+
+      // Loop through all list items, and hide those that don't match the search query
+      for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          li[i].style.display = "";
+        } else {
+          li[i].style.display = "none";
+        }
+      }
+    }
+
+    function selectAM(value) {
+      document.getElementById("searchDropdownAM").value = value;
+      document.getElementById("dropdownSearchListAM").style.display = "none";
+    }
+    function selectKawin(value) {
+      document.getElementById("searchDropdownKawin").value = value;
+      document.getElementById("dropdownSearchListKawin").style.display = "none";
+    }
+    function formatCurrency(input) {
+      // Ambil nilai tanpa karakter non-digit
+      let value = input.value.replace(/[^0-9]/g, '');
+      // Pastikan ada nilai yang akan diformat
+      if (value) {
+        // Konversi ke format IDR dengan menambahkan Rp dan pemisah ribuan
+        input.value = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0
+        }).format(value);
+      } else {
+        input.value = '';
+      }
+      
+      // Pindahkan cursor ke akhir input setelah format diterapkan
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+    
+    // Gunakan event input pada TextField
+    document.getElementById("inputFieldID").addEventListener("input", function () {
+      formatCurrency(this);
+    });
+    
+  </script>
+</head>
+
+<body>
+  <!-- Layout wrapper -->
+  <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+      <!-- Menu -->
+      <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <div class="app-brand demo">
+          <a href="{{ url_for('home') }}" class="app-brand-link">
+            <span class="app-brand-logo demo">
+              <img src="../static/logoTelkom.svg" alt="Logo" width="50" height="50">
+            </span>
+            <span class="app-brand-text demo menu-text fw-bolder ms-2">tewin</span>
+          </a>
+
+          <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+          </a>
+        </div>
+        <div class="container">
+          <p>Tenant Kawasan Industri Riau Kepulauan</p>
+        </div>
+
+        <div class="menu-inner-shadow"></div>
+
+        <ul class="menu-inner py-1">
+          <!-- Dashboard -->
+          <li class="menu-item">
+            <a href="{{ url_for('home') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-home-circle"></i>
+              <div data-i18n="Analytics">Dashboard</div>
+            </a>
+          </li>
+          <!-- Recap -->
+          <li class="menu-item">
+            <a href="{{ url_for('recap') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-collection"></i>
+              <div data-i18n="Basic">Recap</div>
+            </a>
+          </li>
+          <!-- Visiting -->
+          <li class="menu-item active">
+            <a href="{{ url_for('visiting') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-support"></i>
+              <div data-i18n="Basic">Visiting</div>
+            </a>
+          </li>
+          <!-- Create AM -->
+          {% if user_info.role == 'sakti'%}
+          <li class="menu-item">
+            <a href="{{ url_for('createAM') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+              <div data-i18n="Basic">Create AM</div>
+            </a>
+          </li>
+          {% endif %}
+          <!-- Logout -->
+          <li class="menu-item">
+            <a href="/login" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-power-off"></i>
+              <div data-i18n="Basic">Logout</div>
+            </a>
+          </li>
+
+        </ul>
+      </aside>
+      <!-- / Menu -->
+
+      <div class="layout-page">
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+          <!-- Content -->
+
+          <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row">
+              <div class="col-lg-8 mb-4 order-0">
+                <div class="card">
+                  <div class="d-flex align-items-end row">
+                    <div class="col-sm-7">
+                      <div class="card-body">
+                        <h5 class="card-title text-primary">Welcome {{user_info.username}}! 🎉</h5>
+                        <p class="mb-4">
+                          Keep the spirit and always live a good <span class="fw-bold">life</span>. Don't forget to
+                          drink water.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-sm-5 text-center text-sm-left">
+                      <div class="card-body pb-0 px-0 px-md-4">
+                        <img src="../static/assets/img/illustrations/man-with-laptop-light.png" height="140"
+                          alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png"
+                          data-app-light-img="illustrations/man-with-laptop-light.png" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-12 order-2 order-md-3 order-lg-2 mb-4">
+                <div class="card">
+                  <div class="row align-items-center px-3">
+                    <h5 class="card-header mb-0 col-sm-9">Visiting</h5>
+                    <span id="rowCount" class="mb-0 col-sm-3">Total Data : 0</span>
+                  </div>
+                  <div class="row p-3">
+                    <div class="col-md-7 mb-2">
+                      <input type="text" id="searchInput" onkeyup="searchTable()" class="form-control"
+                        placeholder="Cari di tabel...">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                      <select id="filterColumn" class="form-select" onchange="searchTable()">
+                        <option value="all">All</option>
+                        <option value="0">ID</option>
+                        <option value="1">AM</option>
+                        <option value="2">Kawasan Industri</option>
+                        <option value="3">Nama Tenant</option>
+                        <option value="4">SPH</option>
+                        <option value="5">Status</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-2 mb-2">
+                      <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#modalNewKawasan">
+                        Add New Kawasan
+                      </button>
+                    </div>
+                    <!-- MODAL TAMBAH KAWIN -->
+                    <div class="modal fade" id="modalNewKawasan" tabindex="-1" style="display: none;"
+                      aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="modalNewKawasanTitle">Add New Kawasan <span style="color: red; font-size: x-small;">*Perhatikan Besar Kecil Huruf</span></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <form action="/add_kawasan" method="POST">
+                            <div class="modal-body">
+                              <!-- Kawasan Industri Input Field -->
+                              <div class="row">
+                                <div class="col mb-3">
+                                  <label for="namaKawasanIndustri" class="form-label">Kawasan Industri</label>
+                                  <input type="text" id="namaKawasanIndustri" name="kawin" class="form-control"
+                                    placeholder="Masukkan Nama Kawasan Industri" required>
+                                </div>
+                              </div>
+
+                              <!-- AM Searchable Input -->
+                              <div class="row">
+                                <div class="col mb-3">
+                                  <label for="namaAM" class="form-label">AM</label>
+                                  {% if user_info.role == 'sakti'%}
+                                  <div class="dropdown">
+                                    <input type="text" id="searchDropdownAM" name="am" class="form-control"
+                                      placeholder="Pilih AM" autocomplete="off" onfocus="showDropdown('AM')"
+                                      onkeyup="filterDropdown('AM')" required>
+                                    <ul id="dropdownSearchListAM" class="dropdown-menu" style="display: none;">
+                                      <!-- Dropdown options, AM names -->
+                                      {% for x in am %}
+                                      <li><a class="dropdown-item" href="#"
+                                          onclick="selectAM('{{x.username}}')">{{x.username}}</a></li>
+                                      {% endfor %}
+                                    </ul>
+                                  </div>
+                                  {% elif user_info.role == 'am' %}
+                                  <div class="dropdown">
+                                    <input type="text" id="searchDropdownAM" name="am" class="form-control"
+                                      placeholder="Pilih AM" autocomplete="off" value="{{user_info.username}}" required disabled>
+                                  </div>
+                                  {%endif%}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Batal
+                              </button>
+                              <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- MODAL TAMBAH TENANT -->
+                    <div class="col-md-2 mb-2">
+                      <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#modalNewTenant">
+                        Add New Tenant
+                      </button>
+                    </div>
+                    <div class="modal fade" id="modalNewTenant" tabindex="-1" style="display: none;" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="modalNewTenantTitle">Add New Tenant <span style="color: red; font-size: x-small;">*Perhatikan Besar Kecil Huruf</span></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <form action="/add_tenant" method="post">
+                            <div class="modal-body">
+                              <div class="row">
+                                <div class="col mb-3">
+                                  <label for="namaKawasanIndustri" class="form-label">Kawasan Industri</label>
+                                  <div class="dropdown">
+                                    <input type="text" id="searchDropdownKawin" name="kawin" class="form-control" placeholder="Pilih Kawasan Industri" autocomplete="off" onfocus="showDropdown('Kawin')" onkeyup="filterDropdown('Kawin')" required>
+                                    <ul id="dropdownSearchListKawin" class="dropdown-menu" style="display: none;">
+                                      <!-- Dropdown options, AM names -->
+                                      {% for x in kawin %}
+                                      {% if user_info.username == x.AM  %}
+                                        <li><a class="dropdown-item" href="#"
+                                            onclick="selectKawin('{{x.Kawasan_Industri}}')">{{x.Kawasan_Industri}}</a></li>
+                                      {% endif %}
+                                      {% endfor %}
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row g-2">
+                                <div class="col mb-0">
+                                  <label for="namaTenant" class="form-label">Nama Tenant</label>
+                                  <input type="text" id="namaTenant" name="namaTenant" class="form-control"
+                                    placeholder="Masukkan Nama Tenant" required>
+                                </div>
+                                <div class="col mb-0">
+                                  <label for="bidangUsaha" class="form-label">Bidang Usaha</label>
+                                  <input type="text" id="bidangUsaha" name="bidangUsaha" class="form-control"
+                                    placeholder="Masukkan Bidang Usaha Tenant" required>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Batal
+                              </button>
+                              <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="table-responsive text-nowrap">
+                    <table class="table" id="myTable">
+                      <thead>
+                        <tr class="text-nowrap">
+                          <th>ID</th>
+                          <th>AM</th>
+                          <th>Kawasan Industri</th>
+                          <th>Nama Tenant</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for x in data %}
+                        {% if user_info.role == 'sakti' or (user_info.role == 'am' and x.AM == user_info.username) %}
+
+                        <tr>
+                          <td scope="row">{{ x.No }}</td>
+                          <td>{{ x.AM }}</td>
+                          <td>{{ x.Kawasan_Industri }}</td>
+                          <td>{{ x.Tenant }}</td>
+                          <td>
+                            <!-- DELETE -->
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDelete{{x.No}}""><i class="bx bx-trash"></i> Delete</button>
+                            <div class="modal fade" id="modalDelete{{x.No}}" tabindex="-1" style="display: none;" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="modalDelete{{x.No}}Title">Hapus Data</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <h5>Yakin untuk menghapus {{x.Tenant}} ?</h5>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <form action="/delete-visiting/{{x.No}}" method="post">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                      Tidak
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Ya</button>
+                                  </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!-- UPDATE -->
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalEdit{{x.No}}"><i class="bx bx-pencil"></i> Update</button>
+                            <div class="modal fade" id="modalEdit{{x.No}}" tabindex="-1" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <div style="display: flex; flex-direction: column;">
+                                      <h5 class="modal-title" id="modalEdit{{x.No}}Title" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+                                        {{x.Tenant}}
+                                      </h5>
+                                      <span style="color: red; font-size: x-small;">*Perhatikan Besar Kecil Huruf</span>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <form action="/edit-visiting/{{x.No}}", method="post">
+                                    <div class="modal-body">
+                                      <div class="row g-2">
+                                        <div class="col mb-0">
+                                          <label for="visiting" class="form-label">Visiting</label>
+                                          <select id="visiting" name="visiting" class="form-select">
+                                            <option value="" disabled>Pilih Status</option>
+                                            <option value="Visited" {% if x.Visiting == 'Visited'%} selected {% endif %}>Sudah</option>
+                                            <option value="-" {% if x.Visiting == '-' %} selected {% endif %}>Belum</option>
+                                          </select>
+                                        </div>
+                                        <div class="col mb-0">
+                                          <label for="sph" class="form-label">SPH</label>
+                                          <select id="sph" name="sph" class="form-select">
+                                            <option value="" disabled>Pilih Status</option>
+                                            <option value="SPH" {% if x.SPH == 'SPH'%} selected {% endif %}>SPH</option>
+                                            <option value="-" {% if x.SPH == '-'%} selected {% endif %}>Belum</option>
+                                          </select>
+                                        </div>
+                                      </div>
+                                      <div class="row g-2">
+                                        <div class="col mb-0">
+                                          <label for="status_sph" class="form-label">Status SPH</label>
+                                          <select id="status_sph" name="status_sph" class="form-select">
+                                            <option value="" disabled {% if x.Status_SPH == '-'%} selected {% endif %}>Pilih Status</option>
+                                            <option value="DEAL" {% if x.Status_SPH == 'DEAL'%} selected {% endif %}>DEAL</option>
+                                            <option value="NEGO" {% if x.Status_SPH == 'NEGO'%} selected {% endif %}>NEGO</option>
+                                            <option value="NO DEAL" {% if x.Status_SPH == 'NO DEAL'%} selected {% endif %}>NO DEAL</option>
+                                          </select>
+                                        </div>
+                                        <div class="col mb-0">
+                                          <label for="nilai_kontrak" class="form-label">Nilai Kontrak</label>
+                                          <input type="text" id="nilai_kontrak" name="nilai_kontrak" class="form-control" placeholder="IDR" oninput="formatCurrency(this)" {% if x.Nilai_Kontrak != '-'%} value="Rp {{ '{:,.0f}'.format(x.Nilai_Kontrak) | replace(',', '.') }}"  {% endif %}>
+                                        </div>
+                                      </div>
+                                      <div class="row">
+                                        <div class="col mb-3">
+                                          <label for="layanan" class="form-label">Layanan</label>
+                                          <input type="text" id="layanan" name="layanan" class="form-control" placeholder="Enter Layanan" {% if x.Layanan != '-'%} value="{{x.Layanan}}" {% endif %}>
+                                        </div>
+                                      </div>
+                                      {% if user_info.role == 'sakti'%}
+                                      <div class="row">
+                                        <div class="col mb-3">
+                                          <label for="skor_am" class="form-label">Skor AM</label>
+                                          <input type="text" id="skor_am" name="skor_am" class="form-control" placeholder="Enter Skor AM" {% if x.skor_am != '-'%} value="{{x.Skor_AM}}" {% endif %}>
+                                        </div>
+                                      </div>
+                                      {% endif %}
+                                    </div>
+                                    
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                        Batal
+                                      </button>
+                                      <button type="submit" class="btn btn-primary">Simpan</button>
+                                    </div>
+
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="content-footer footer bg-footer-theme">
+            <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+              <div class="mb-2 mb-md-0">
+                ©
+                <script>
+                  document.write(new Date().getFullYear());
+                </script>
+                , made by ITSA 21 A
+              </div>
+            </div>
+          </footer>
+          <div class="content-backdrop fade"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="../static/js/search-visiting.js"></script>
+  <script src="../static/assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="../static/assets/vendor/libs/popper/popper.js"></script>
+  <script src="../static/assets/vendor/js/bootstrap.js"></script>
+  <script src="../static/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="../static/assets/vendor/js/menu.js"></script>
+  <script src="../static/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+  <script src="../static/assets/js/main.js"></script>
+  <script src="../static/assets/js/dashboards-analytics.js"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+  toastr.options = {
+    "closeButton": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "timeOut": "3000"
+  };
+</script>
+</body>
+
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default"
+  data-assets-path="../static/assets/" data-template="vertical-menu-template-free">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+  <title>Create AM | Tenant Kawasan Industri</title>
+  <meta name="description" content="" />
+  <link rel="icon" type="image/x-icon" href="../static/logoTelkom.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../static/assets/vendor/fonts/boxicons.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/css/core.css" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="../static/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+  <link rel="stylesheet" href="../static/assets/css/demo.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <script src="../static/assets/vendor/js/helpers.js"></script>
+  <script src="../static/assets/js/config.js"></script>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            {% if category == 'success' %}
+              toastr.success("{{ message }}");
+            {% elif category == 'warning' %}
+              toastr.warning("{{ message }}");
+            {% elif category == 'danger' %}
+              toastr.error("{{ message }}");
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    });
+    toastr.options = {
+      "closeButton": true,
+      "progressBar": true,
+      "positionClass": "toast-top-right",
+      "timeOut": "3000"
+    };
+  </script>
+</head>
+
+<body>
+  <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+      <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <div class="app-brand demo">
+          <a href="{{ url_for('home') }}" class="app-brand-link">
+            <span class="app-brand-logo demo">
+              <img src="../static/logoTelkom.svg" alt="Logo" width="50" height="50">
+            </span>
+            <span class="app-brand-text demo menu-text fw-bolder ms-2">tewin</span>
+          </a>
+          <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+          </a>
+        </div>
+        <div class="container">
+          <p>Tenant Kawasan Industri Riau Kepulauan</p>
+        </div>
+        <div class="menu-inner-shadow"></div>
+
+        <ul class="menu-inner py-1">
+          <!-- Dashboard -->
+          <li class="menu-item">
+            <a href="{{ url_for('home') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-home-circle"></i>
+              <div data-i18n="Analytics">Dashboard</div>
+            </a>
+          </li>
+          <!-- Recap -->
+          <li class="menu-item">
+            <a href="{{ url_for('recap') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-collection"></i>
+              <div data-i18n="Basic">Recap</div>
+            </a>
+          </li>
+          <!-- Visiting -->
+          <li class="menu-item">
+            <a href="{{ url_for('visiting') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-support"></i>
+              <div data-i18n="Basic">Visiting</div>
+            </a>
+          </li>
+          <!-- Create AM -->
+          <li class="menu-item active">
+            <a href="{{ url_for('createAM') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+              <div data-i18n="Basic">Create AM</div>
+            </a>
+          </li>
+          <!-- Logout -->
+          <li class="menu-item">
+            <a href="{{ url_for('sign_out') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-power-off"></i>
+              <div data-i18n="Basic">Logout</div>
+            </a>
+          </li>
+        </ul>
+      </aside>
+      <div class="layout-page">
+        <div class="content-wrapper">
+          <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4">Create New AM</h4>
+            <div class="row">
+              <!-- Basic Layout -->
+              <div class="col-6">
+                <div class="card mb-4">
+                  <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Add new AM</h5>
+                  </div>
+                  <div class="card-body">
+                    <form id="addNewAm" class="mb-3" action="/add_am" method="POST">
+                      <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="username">Username</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="username" name="username" placeholder="John Doe" />
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="password">Password</label>
+                        <div class="col-sm-10">
+                          <input type="password" class="form-control" id="password" name="password" placeholder="Enter the password" />
+                        </div>
+                      </div>
+                      <!-- <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="basic-default-email">Email</label>
+                        <div class="col-sm-10">
+                          <div class="input-group input-group-merge">
+                            <input type="text" id="basic-default-email" class="form-control" placeholder="john.doe"
+                              aria-label="john.doe" aria-describedby="basic-default-email2" />
+                            <span class="input-group-text" id="basic-default-email2">@example.com</span>
+                          </div>
+                          <div class="form-text">You can use letters, numbers & periods</div>
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="basic-default-phone">Phone No</label>
+                        <div class="col-sm-10">
+                          <input type="text" id="basic-default-phone" class="form-control phone-mask"
+                            placeholder="658 799 8941" aria-label="658 799 8941"
+                            aria-describedby="basic-default-phone" />
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" for="basic-default-message">Message</label>
+                        <div class="col-sm-10">
+                          <textarea id="basic-default-message" class="form-control"
+                            placeholder="Hi, Do you have a moment to talk Joe?"
+                            aria-label="Hi, Do you have a moment to talk Joe?"
+                            aria-describedby="basic-icon-default-message2"></textarea>
+                        </div>
+                      </div> -->
+                      <div class="row justify-content-end">
+                        <div class="col-sm-10">
+                          <button type="submit" class="btn btn-primary">+Add</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!-- Basic with Icons -->
+              <div class="col-6">
+                <div class="card mb-4">
+                  <h5 class="card-header">All Data AM</h5>
+                  <div class="table-responsive text-nowrap">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Actions</th>
+                          <th>No.</th>
+                          <th>AM</th>
+                          <th>Password</th>
+                        </tr>
+                      </thead>
+                      <tbody class="table-border-bottom-0">
+                        {% for i in data%}
+                        {% if i.role == 'am' %}
+                        <tr>
+                          <td style="justify-content: center; align-items: center; display: flex;">
+                            <div class="dropdown">
+                              <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                              </button>
+                              <div class="dropdown-menu">
+                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#modalUpdate{{ i.idAM}}"><i class="bx bx-edit-alt me-1" ></i> Edit</a>
+                                <a class="dropdown-item" href=""  data-bs-toggle="modal" data-bs-target="#modalDelete{{ i.idAM}}"><i class="bx bx-trash me-1"></i> Delete</a>
+                              </div>
+                            </div>
+                          </td>
+                          <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ loop.index }}</strong></td>
+                          <td>{{ i.username }}</td>
+                          <td>{{ i.password }}</td>
+                        </tr>
+                        <div class="modal fade" id="modalUpdate{{ i.idAM }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="modalUpdateTitle">Update AM</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <form class="mb-3" action="/edit-am/{{ i.idAM }}" method="POST">
+                              <div class="modal-body">
+                                  <div class="mb-3">
+                                    <label for="email" class="form-label">Username</label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="email"
+                                      name="username"
+                                      placeholder="Enter your username"
+                                      value="{{i.username}}"
+                                    />
+                                  </div>
+                                  <div class="mb-3 form-password-toggle">
+                                    <div class="d-flex justify-content-between">
+                                      <label class="form-label" for="password">Password</label>
+                                      <!-- <a href="auth-forgot-password-basic.html">
+                                        <small>Forgot Password?</small>
+                                      </a> -->
+                                    </div>
+                                    <div class="input-group input-group-merge">
+                                      <input
+                                        type="password"
+                                        id="password"
+                                        class="form-control"
+                                        name="password"
+                                        placeholder="Retype password"
+                                        aria-describedby="password"
+                                        required
+                                      />
+                                      <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                      Close
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                  </div>
+                                </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal fade" id="modalDelete{{i.idAM}}" tabindex="-1" style="display: none;" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="modalToggleLabel">Delete {{ i.username }} ?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <form action="/delete-am/{{ i.idAM }}" method="POST" enctype="multipart/form-data">
+                                <div class="modal-body">Are you sure to delete AM {{ i.username }} ?</div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                  <button type="submit" class="btn btn-primary">Confirm</button>
+                                </div>
+                            </form>
+                            </div>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- / Content -->
+
+          <!-- Footer -->
+          <footer class="content-footer footer bg-footer-theme">
+            <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+              <div class="mb-2 mb-md-0">
+                ©
+                <script>
+                  document.write(new Date().getFullYear());
+                </script>
+                , made by ITSA 21 A
+              </div>
+            </div>
+          </footer>
+          <!-- / Footer -->
+
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!-- Content wrapper -->
+      </div>
+      <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+  </div>
+
+  <script src="../static/assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="../static/assets/vendor/libs/popper/popper.js"></script>
+  <script src="../static/assets/vendor/js/bootstrap.js"></script>
+  <script src="../static/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="../static/assets/vendor/js/menu.js"></script>
+  <script src="../static/assets/js/main.js"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default"
+  data-assets-path="../static/assets/" data-template="vertical-menu-template-free">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>Dashboard | Tenant Kawasan Industri</title>
+  <meta name="description" content="" />
+  <link rel="icon" type="image/x-icon" href="../static/logoTelkom.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../static/assets/vendor/fonts/boxicons.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/css/core.css" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="../static/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+  <link rel="stylesheet" href="../static/assets/css/demo.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="../static/assets/vendor/libs/apex-charts/apex-charts.css" />
+  <script src="../static/assets/vendor/js/helpers.js"></script>
+  <script src="../static/assets/js/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+  <style>
+    /* Overlay styles */
+    #overlay {
+      position: fixed; /* Position the overlay */
+      top: 0;
+      left: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+      z-index: 9999; /* Ensure it is above other content */
+      display: none; /* Hidden by default */
+      justify-content: center; /* Center the spinner */
+      align-items: center; /* Center the spinner */
+    }
+  
+    /* Spinner styles */
+    .spinner {
+      border: 12px solid #f3f3f3; /* Light grey */
+      border-top: 12px solid #ff6969; /* Blue */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite; /* Spin animation */
+    }
+  
+    /* Keyframes for spinner animation */
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  
+  
+</head>
+
+<body>
+  
+  <div id="overlay">
+    <div class="spinner"></div>
+  </div>
+  <script>
+    function showOverlay() {
+      document.getElementById('overlay').style.display = 'flex';
+    }
+    function hideOverlay() {
+      document.getElementById('overlay').style.display = 'none';
+    }
+    showOverlay();
+    window.onload = function() {
+        hideOverlay();
+    };
+  </script>
+  <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+      <!-- Menu -->
+
+      <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <div class="app-brand demo">
+          <a href="{{ url_for('home') }}" class="app-brand-link">
+            <span class="app-brand-logo demo">
+              <img src="../static/logoTelkom.svg" alt="Logo" width="50" height="50">
+            </span>
+            <span class="app-brand-text demo menu-text fw-bolder ms-2">tewin</span>
+          </a>
+
+          <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+          </a>
+        </div>
+        <div class="container">
+          <p>Tenant Kawasan Industri Riau Kepulauan</p>
+        </div>
+
+        <div class="menu-inner-shadow"></div>
+
+        <ul class="menu-inner py-1">
+          <!-- Dashboard -->
+          <li class="menu-item active">
+            <a href="#" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-home-circle"></i>
+              <div data-i18n="Analytics">Dashboard</div>
+            </a>
+          </li>
+          <!-- Recap -->
+          <li class="menu-item">
+            <a href="{{ url_for('recap') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-collection"></i>
+              <div data-i18n="Basic">Recap</div>
+            </a>
+          </li>
+          <!-- Visiting -->
+          <li class="menu-item">
+            <a href="{{ url_for('visiting') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-support"></i>
+              <div data-i18n="Basic">Visiting</div>
+            </a>
+          </li>
+          <!-- Create AM -->
+          {% if user_info.role == 'sakti' %}
+          <li class="menu-item">
+            <a href="{{ url_for('createAM') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+              <div data-i18n="Basic">Create AM</div>
+            </a>
+          </li>
+          {% endif %}
+          <!-- Logout -->
+          <li class="menu-item">
+            <a href="{{ url_for('sign_out') }}" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-power-off"></i>
+              <div data-i18n="Basic">Logout</div>
+            </a>
+          </li>
+
+
+        </ul>
+      </aside>
+      <!-- / Menu -->
+
+      <div class="layout-page">
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+          <!-- Content -->
+
+          <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row">
+              <div class="col-lg-8 mb-4 order-0">
+                <div class="card">
+                  <div class="d-flex align-items-end row">
+                    <div class="col-sm-7">
+                      <div class="card-body">
+                        <h5 class="card-title text-primary">Welcome {{user_info.username}}! 🎉</h5>
+                        <p class="mb-4">
+                          Keep the spirit and always live a good <span class="fw-bold">life</span>. Don't forget to
+                          drink water.
+                        </p>
+
+                      </div>
+                    </div>
+                    <div class="col-sm-5 text-center text-sm-left">
+                      <div class="card-body pb-0 px-0 px-md-4">
+                        <img src="../static/assets/img/illustrations/man-with-laptop-light.png" height="140"
+                          alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png"
+                          data-app-light-img="illustrations/man-with-laptop-light.png" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-4 order-1">
+                <div class="row">
+                  <div class="col-lg-6 col-md-12 col-6 mb-4">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                          <div class="avatar flex-shrink-0">
+                            <img src="../static/assets/img/icons/unicons/chart-success.png" alt="chart success"
+                              class="rounded" />
+                          </div>
+                        </div>
+                        <span class="fw-semibold d-block mb-1">Total SPH</span>
+                        <h3 class="card-title text-nowrap mb-1" id="total-sph">99</h3>
+                        <small class="text-success fw-semibold" id="total-sph-persen">28.42%</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-md-12 col-6 mb-4">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                          <div class="avatar flex-shrink-0">
+                            <img src="../static/assets/img/icons/unicons/wallet-info.png" alt="Credit Card"
+                              class="rounded" />
+                          </div>
+                        </div>
+                        <span class="fw-semibold d-block mb-1">Total No Deal</span>
+                        <h3 class="card-title text-nowrap mb-1" id="total-noDeal">99</h3>
+                        <small class="text-success fw-semibold" id="total-noDeal-persen">28.42%</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Total Revenue -->
+              <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
+                <div class="card">
+                  <div class="row align-items-center px-3">
+                    <h5 class="card-header mb-0 col-sm-9">Market & Customer</h5>
+                    <span id="rowCount" class="mb-0 col-sm-3">Total Data : 0</span>
+                  </div>
+                  <!-- Input Search and Filter Dropdown -->
+                  <div class="row p-3">
+                    <div class="col-md-6 mb-2">
+                      <input type="text" id="searchInput" onkeyup="searchTable()" class="form-control"
+                        placeholder="Cari di tabel...">
+                    </div>
+                    <div class="col-md-3">
+                      <select id="filterColumn" class="form-select" onchange="searchTable()">
+                        <option value="all">All</option>
+                        <option value="1">ID TENANT</option>
+                        <option value="2">AM</option>
+                        <option value="3">Kawasan Industri</option>
+                        <option value="4">Tenant</option>
+                        <option value="5">Bidang Usaha</option>
+                        <option value="6">Visiting</option>
+                        <option value="7">SPH</option>
+                        <option value="8">Status SPH</option>
+                        <option value="9">Nilai Kontrak</option>
+                        <option value="10">Layanan</option>
+                        <option value="11">Skor AM</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-3">
+                      <button id="downloadExcel" class="btn btn-success">Download Excel</button>
+                    </div>
+                  </div>
+
+                  <div class="table-responsive text-nowrap">
+                    <table class="table" id="myTable">
+                      <thead>
+                        <tr class="text-nowrap">
+                          <th>ID TENANT</th>
+                          <th>AM</th>
+                          <th>Kawasan Industri</th>
+                          <th>Tenant</th>
+                          <th>Bidang Usaha</th>
+                          <th>Visiting</th>
+                          <th>SPH</th>
+                          <th>Status SPH</th>
+                          <th>Nilai Kontrak</th>
+                          <th>Layanan</th>
+                          <th>Skor AM</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        
+                        {% for entry in data %}
+                          {% if user_info.role == 'sakti' or (user_info.role == 'am' and entry.AM == user_info.username) %}
+                            <tr>
+                              <td>{{ entry.No }}</td>
+                              <td>{{ entry.AM }}</td>
+                              <td>{{ entry.Kawasan_Industri }}</td>
+                              <td>{{ entry.Tenant }}</td>
+                              <td>{{ entry.Field_of_Business }}</td>
+                              <td>{{ entry.Visiting }}</td>
+                              <td>{{ entry.SPH }}</td>
+                              <td>{{ entry.Status_SPH }}</td>
+                              <td>Rp {{ "{:,.0f}".format(entry.Nilai_Kontrak | int) | replace(",", ".") }}</td>
+                              <td>{{ entry.Layanan }}</td>
+                              <td>{{ entry.Skor_AM }}</td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+                <div class="row">
+                  <div class="col-6 mb-4">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                          <div class="avatar flex-shrink-0">
+                            <img src="../static/assets/img/icons/unicons/paypal.png" alt="Credit Card"
+                              class="rounded" />
+                          </div>
+                        </div>
+                        <span class="fw-semibold d-block mb-1">Total Nego</span>
+                        <h3 class="card-title text-nowrap mb-2" id="total-nego">99</h3>
+                        <small class="text-success fw-semibold" id="total-nego-persen">14.82%</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 mb-4">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                          <div class="avatar flex-shrink-0">
+                            <img src="../static/assets/img/icons/unicons/cc-primary.png" alt="Credit Card"
+                              class="rounded" />
+                          </div>
+                        </div>
+                        <span class="fw-semibold d-block mb-1">Total Deal</span>
+                        <h3 class="card-title mb-2" id="total-deal">99</h3>
+                        <small class="text-success fw-semibold" id="total-deal-persen">28.14%</small>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Jumlah Tenant -->
+              <!--/ Total Revenue -->
+                  <div class="col-12">
+                    <div class="card h-100">
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <h5 class="card-title m-0 me-2">Jumlah Tenant Di Kawasan Industri</h5>
+                      </div>
+                      <div class="card-body">
+                        <ul class="p-0 m-0">
+                          <li class="d-flex mb-4 pb-1">
+                            <div class="avatar flex-shrink-0 me-3">
+                              <img src="../static/assets/img/icons/unicons/chart.png"" alt=" User" class="rounded" />
+                            </div>
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                              <div class="me-2 col-8">
+                                <small class="text-muted d-block mb-1">Kawasan Industri</small>
+                                <h6 class="mb-0">Nama Tenant</h6>
+                              </div>
+                              <div class="user-progress d-flex align-items-center gap-1 col-4">
+                                <h6 class="mb-0">4</h6>
+                                <span class="text-muted">Tenant</span>
+                              </div>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <!--/ Jumlah Tenant -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer class="content-footer footer bg-footer-theme">
+            <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+              <div class="mb-2 mb-md-0">
+                ©
+                <script>
+                  document.write(new Date().getFullYear());
+                </script>
+                made by ITSA 21 A
+              </div>
+            </div>
+          </footer>
+          <div class="content-backdrop fade"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('downloadExcel').addEventListener('click', function () {
+      var wb = XLSX.utils.book_new();
+      wb.Props = {
+        Title: "Market & Customer Data",
+        Subject: "Data",
+        Author: "Telkom Witel Riau",
+        CreatedDate: new Date()
+      };
+
+      wb.SheetNames.push("Sheet1");
+
+      var ws_data = [];
+      var table = document.getElementById("myTable");
+      var rows = table.querySelectorAll("tr");
+
+      rows.forEach(function (row, index) {
+        if (row.style.display !== "none") { // Hanya tambahkan baris yang terlihat
+          var rowData = [];
+          var cells = row.querySelectorAll("td, th");
+
+          // Exclude the first cell (Action column) from each row
+          for (var i = 0; i < cells.length; i++) { // Mulai loop dari 1 untuk melewatkan kolom "Action"
+            rowData.push(cells[i].innerText.trim());
+          }
+
+          if (rowData.length > 0) { // Skip empty rows
+            ws_data.push(rowData);
+          }
+        }
+      });
+
+      var ws = XLSX.utils.aoa_to_sheet(ws_data);
+      wb.Sheets["Sheet1"] = ws;
+
+      XLSX.writeFile(wb, "Market_Customer_Data.xlsx");
+    });
+  </script>
+
+  <script src="../static/js/detail_total.js"></script>
+  <script src="../static/assets/vendor/libs/jquery/jquery.js"></script>
+  <script src="../static/assets/vendor/libs/popper/popper.js"></script>
+  <script src="../static/assets/vendor/js/bootstrap.js"></script>
+  <script src="../static/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="../static/assets/vendor/js/menu.js"></script>
+  <script src="../static/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+  <script src="../static/assets/js/main.js"></script>
+  <script src="../static/assets/js/dashboards-analytics.js"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  
+</body>
+
+</html>
